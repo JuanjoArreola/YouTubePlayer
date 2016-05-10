@@ -17,7 +17,6 @@ enum YouTubeRequestType: Int {
 
 enum YouTubeError: ErrorType {
     case InvalidURL
-    case MaxRequestsReached
     case EncodingError
     case NoStreamAvailable(reason: String?)
     case SignatureError
@@ -43,8 +42,8 @@ public class VideoOperation {
     var webpage: VideoWebpage?
     var embedWebpage: VideoWebpage?
     var playerScript: PlayerScript?
-    public var video: Video?
-    var noStreamVideo: Video?
+    public var video: YouTubeVideo?
+    var noStreamVideo: YouTubeVideo?
     
     // MARK: - Init
     
@@ -206,7 +205,7 @@ public class VideoOperation {
     // MARK: - Handlers
     
     func handleVideoInfo(info: [String: String]) throws {
-        let video = try Video(identifier: videoIdentifier, info: info, playerScript: playerScript)
+        let video = try YouTubeVideo(identifier: videoIdentifier, info: info, playerScript: playerScript)
         if let otherVideo = noStreamVideo {
             video.mergeVideo(otherVideo)
         }

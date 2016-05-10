@@ -20,7 +20,7 @@ public protocol Cancellable {
 
 public class Request<T: Any>: Cancellable, CustomDebugStringConvertible {
     
-    private var completionHandlers: [(getObject: () throws -> T) -> Void]? = []
+    var completionHandlers: [(getObject: () throws -> T) -> Void]? = []
     private var result: (() throws -> T)?
     
     public var subrequest: Cancellable? {

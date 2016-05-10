@@ -34,7 +34,7 @@ public enum VideoQuality {
     }
 }
 
-public class Video {
+public class YouTubeVideo {
     let identifier: String
     let title: String
     public let streamURLs: [VideoQuality: NSURL]
@@ -114,7 +114,7 @@ public class Video {
         self.streamURLs = streamURLs
     }
     
-    func mergeVideo(video: Video) {
+    func mergeVideo(video: YouTubeVideo) {
 //        TODO: make sense
     }
 }
