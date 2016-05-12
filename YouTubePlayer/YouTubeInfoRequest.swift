@@ -8,6 +8,18 @@
 
 import Foundation
 
+enum YouTubeError: ErrorType {
+    case InvalidURL
+    case EncodingError
+    case NoStreamAvailable(reason: String?)
+    case SignatureError
+    case AgeRestricted
+    case WebPageError
+    case InvalidWebpage
+    case NotImplemented
+    case InvalidQuality
+}
+
 private let processQueue = dispatch_queue_create("com.youtubeplayer.ProcessQueue", DISPATCH_QUEUE_CONCURRENT)
 
 public class YouTubeInfoRequest: Request<YouTubeVideo> {
@@ -34,11 +46,42 @@ public class YouTubeInfoRequest: Request<YouTubeVideo> {
         super.init()
         completionHandlers!.append(completion)
         dispatch_async(processQueue) { 
-            self.startInfoRequestWithLabel("embedded")
+            self.start()
         }
     }
     
-    func startInfoRequestWithLabel(label: String) {
+    // MARK: - 
+    
+    func start() {
+        startInfoRequestWithLabel("embedded") { (getVideo) in
+            do {
+                let video = try getVideo()
+                dispatch_async(dispatch_get_main_queue(), { self.completeWithObject(video) })
+            }
+            catch YouTubeError.EncodingError {
+                dispatch_async(dispatch_get_main_queue(), { self.completeWithError(YouTubeError.EncodingError) })
+            }
+            catch {
+                self.startInfoRequestWithLabel("detailpage", completion: { (getVideo) in
+                    do {
+                        let video = try getVideo()
+                        dispatch_async(dispatch_get_main_queue(), { self.completeWithObject(video) })
+                    } catch {
+                        self.startWatchPageRequest({ (getVideo) in
+                            do {
+                                let video = try getVideo()
+                                dispatch_async(dispatch_get_main_queue(), { self.completeWithObject(video) })
+                            } catch {
+                                dispatch_async(dispatch_get_main_queue(), { self.completeWithError(error) })
+                            }
+                        })
+                    }
+                })
+            }
+        }
+    }
+    
+    func startInfoRequestWithLabel(label: String, completion: (getVideo: () throws -> YouTubeVideo) -> Void) {
         if cancelled { return }
         
         Log.debug("Starting info request with label: \(label)")
@@ -47,27 +90,22 @@ public class YouTubeInfoRequest: Request<YouTubeVideo> {
                 let result = try getResult()
                 let response = try self.getResponseStringFromData(result.data, response: result.response)
                 let video = try self.getVideoWithInfo(dictionaryFromResponse(response))
-                dispatch_async(dispatch_get_main_queue(), { self.completeWithObject(video) })
-            }
-            catch YouTubeError.EncodingError {
-                dispatch_async(dispatch_get_main_queue(), { self.completeWithError(YouTubeError.EncodingError) })
+                completion(getVideo: { return video })
             }
             catch YouTubeError.SignatureError {
-                if self.cancelled { return }
-                self.startWatchPageRequestWithLabel(label)
+                self.startWatchPageRequest(completion)
             }
             catch {
-                if label == "detailpage" {
-                    self.startWatchPageRequestWithLabel(label)
-                } else {
-                    self.startInfoRequestWithLabel("detailpage")
-                }
+                completion(getVideo: { throw error })
             }
         }
     }
     
-    func startWatchPageRequestWithLabel(label: String) {
+    func startWatchPageRequest(completion: (getVideo: () throws -> YouTubeVideo) -> Void) {
         if cancelled { return }
+        if let _ = webpage {
+            completion(getVideo: { throw YouTubeError.WebPageError })
+        }
         
         Log.debug("Starting watch page request")
         subrequest = self.requestWatchPage({ (getResult) in
@@ -76,24 +114,42 @@ public class YouTubeInfoRequest: Request<YouTubeVideo> {
                 let response = try self.getResponseStringFromData(result.data, response: result.response)
                 self.webpage = VideoWebpage(htmlString: response)
                 if let url = self.webpage?.javascriptPlayerURL {
-                    self.startJavaScriptPlayerRequestWithURL(url)
+                    self.startJavaScriptPlayerRequestWithURL(url, completion: completion)
                 } else {
                     if self.webpage?.isAgeRestricted ?? false {
-                        self.startEmbedWebPageRequestWithLabel(label)
-                    } else if label == "embedded" {
-                        self.startInfoRequestWithLabel("detailpage")
+                        self.startEmbedWebPageRequest(completion)
                     } else {
-                        dispatch_async(dispatch_get_main_queue(), { self.completeWithError(YouTubeError.NoStreamAvailable(reason: nil)) })
+                        completion(getVideo: { throw YouTubeError.WebPageError })
                     }
                 }
             }
             catch {
-                dispatch_async(dispatch_get_main_queue(), { self.completeWithError(error) })
+                completion(getVideo: { throw error })
             }
         })
     }
     
-    func startJavaScriptPlayerRequestWithURL(url: NSURL) {
+    func startEmbedWebPageRequest(completion: (getVideo: () throws -> YouTubeVideo) -> Void) {
+        if cancelled { return }
+        
+        let url = NSURL(string: "https://www.youtube.com/embed/\(videoIdentifier)")!
+        subrequest = startRequestWithURL(url, completion: { (getResult) in
+            do {
+                let result = try getResult()
+                let response = try self.getResponseStringFromData(result.data, response: result.response)
+                self.embedWebpage = VideoWebpage(htmlString: response)
+                if let url = self.embedWebpage?.javascriptPlayerURL {
+                    self.startJavaScriptPlayerRequestWithURL(url, completion: completion)
+                } else {
+                    completion(getVideo: { throw YouTubeError.WebPageError })
+                }
+            } catch {
+                completion(getVideo: { throw error })
+            }
+        })
+    }
+    
+    func startJavaScriptPlayerRequestWithURL(url: NSURL, completion: (getVideo: () throws -> YouTubeVideo) -> Void) {
         if cancelled { return }
         
         subrequest = startRequestWithURL(url, completion: { (getResult) in
@@ -102,49 +158,28 @@ public class YouTubeInfoRequest: Request<YouTubeVideo> {
                 let response = try self.getResponseStringFromData(result.data, response: result.response)
                 self.playerScript = PlayerScript(script: response)
                 if self.webpage?.isAgeRestricted ?? false {
-                    self.startAPIRequest()
+                    self.startAPIRequest(completion)
                 } else {
                     guard let info = self.webpage?.videoInfo as? [String: String] else { throw YouTubeError.WebPageError }
                     let video = try self.getVideoWithInfo(info)
-                    dispatch_async(dispatch_get_main_queue(), { self.completeWithObject(video) })
+                    completion(getVideo: { return video })
                 }
             } catch {
-                dispatch_async(dispatch_get_main_queue(), { self.completeWithError(error) })
+                completion(getVideo: { throw error })
             }
         })
     }
     
-    func startEmbedWebPageRequestWithLabel(label: String) {
-        if cancelled { return }
-        let url = NSURL(string: "https://www.youtube.com/embed/\(videoIdentifier)")!
-        subrequest = startRequestWithURL(url, completion: { (getResult) in
-            do {
-                let result = try getResult()
-                let response = try self.getResponseStringFromData(result.data, response: result.response)
-                self.embedWebpage = VideoWebpage(htmlString: response)
-                if let url = self.embedWebpage?.javascriptPlayerURL {
-                    self.startJavaScriptPlayerRequestWithURL(url)
-                } else if label == "embedded" {
-                    self.startInfoRequestWithLabel("detailpage")
-                } else {
-                    dispatch_async(dispatch_get_main_queue(), { self.completeWithError(YouTubeError.NoStreamAvailable(reason: nil)) })
-                }
-            } catch {
-                
-            }
-        })
-    }
-    
-    func startAPIRequest() {
+    func startAPIRequest(completion: (getVideo: () throws -> YouTubeVideo) -> Void) {
         if cancelled { return }
         subrequest = APIRequest({ (getResult) in
             do {
                 let result = try getResult()
                 let response = try self.getResponseStringFromData(result.data, response: result.response)
                 let video = try self.getVideoWithInfo(dictionaryFromResponse(response))
-                dispatch_async(dispatch_get_main_queue(), { self.completeWithObject(video) })
+                completion(getVideo: { return video })
             } catch {
-                dispatch_async(dispatch_get_main_queue(), { self.completeWithError(error) })
+                completion(getVideo: { throw error })
             }
         })
     }
@@ -192,11 +227,7 @@ public class YouTubeInfoRequest: Request<YouTubeVideo> {
     }
     
     func getVideoWithInfo(info: [String: String]) throws -> YouTubeVideo {
-        let video = try YouTubeVideo(identifier: videoIdentifier, info: info, playerScript: playerScript)
-        if let otherVideo = noStreamVideo {
-            video.mergeVideo(otherVideo)
-        }
-        return video
+        return try YouTubeVideo(identifier: videoIdentifier, info: info, playerScript: playerScript)
     }
     
 }
@@ -229,4 +260,17 @@ private func validateURL(url: NSURL) throws {
     if lastPathComponent != "watch" {
         throw YouTubeError.InvalidURL
     }
+}
+
+func dictionaryFromResponse(response: String) -> [String: String] {
+    var dictionary = [String: String]()
+    let fields = response.componentsSeparatedByString("&")
+    for field in fields {
+        let keyvalue = field.componentsSeparatedByString("=")
+        if keyvalue.count == 2 {
+            let value = keyvalue[1].stringByRemovingPercentEncoding?.stringByReplacingOccurrencesOfString("+", withString: " ")
+            dictionary[keyvalue[0]] = value
+        }
+    }
+    return dictionary
 }

@@ -28,12 +28,12 @@ class ViewController: UIViewController {
             do {
                 let video = try getVideo()
                 let controller = YouTubeVideoPlayerController()
-                controller.youTubeVideo = video
+                try controller.setYouTubeVideo(video)
                 self?.presentViewController(controller, animated: true, completion: { 
-                    controller.player?.play()
+                    controller.play()
                 })
             } catch {
-                
+                print(error)
             }
         }
     }

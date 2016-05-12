@@ -18,71 +18,37 @@ public class YouTubeVideoPlayerController: AVPlayerViewController {
     
     weak var youtubeDelegate: YouTubeVideoPlayerController?
     
-    var request: Request<VideoOperation>?
+    var request: YouTubeInfoRequest?
     
     public var preferredQualities = [VideoQuality.LiveStreaming, VideoQuality.HD_720, VideoQuality.Medium_360, VideoQuality.Small_240]
-    public var youTubeVideo: YouTubeVideo? {
-        didSet {
-            guard let video = youTubeVideo else { return }
-            for quality in preferredQualities {
-                if let url = video.streamURLs[quality] {
-                    self.player = AVPlayer(URL: url)
-                    //                self.showsPlaybackControls = true
-                    break
-                }
-            }
-        }
-    }
+    public var youTubeVideo: YouTubeVideo?
     
-    var videoOperation: VideoOperation?
-    public var videoIdentifier: String!
-    
-    public required init(videoURL: NSURL) {
+    public required convenience init(youTubeVideo: YouTubeVideo) throws {
         self.init()
-    }
-    
-    public required init(videoIdentifier: String) {
-        self.init()
-        self.videoIdentifier = videoIdentifier
-//        self.showsPlaybackControls = false
-    }
-    
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        try setYouTubeVideo(youTubeVideo)
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
-    public override func viewDidLayoutSubviews() {
-//        showsPlaybackControls = true
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
     
-    public func startPlaying() {
-        request?.cancel()
-        request = VideoOperation.createWithVideoIdentifier(videoIdentifier, languageIdentifier: "en", completion: { (getOperation) in
-            do {
-                self.videoOperation = try getOperation()
-                self.playVideo(self.videoOperation!.video!)
-            } catch {
-                Log.error(error)
-            }
-        })
-    }
-    
-    public func playVideo(video: YouTubeVideo) {
-        let videoQualities: [VideoQuality] = [VideoQuality.LiveStreaming, VideoQuality.HD_720, VideoQuality.Medium_360, VideoQuality.Small_240]
-        for quality in videoQualities {
+    public func setYouTubeVideo(video: YouTubeVideo) throws {
+        self.youTubeVideo = video
+        for quality in preferredQualities {
             if let url = video.streamURLs[quality] {
-                self.showsPlaybackControls = true
                 self.player = AVPlayer(URL: url)
-//                self.showsPlaybackControls = true
-                self.player?.play()
-                break
+                return
             }
         }
-        
+        throw YouTubeError.InvalidQuality
+    }
+    
+    public func play() {
+        self.player?.play()
     }
     
 }

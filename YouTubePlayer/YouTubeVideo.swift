@@ -36,7 +36,7 @@ public enum VideoQuality {
 
 public class YouTubeVideo {
     let identifier: String
-    let title: String
+    var title: String?
     public let streamURLs: [VideoQuality: NSURL]
     
     var duration: Int = 0
@@ -57,19 +57,6 @@ public class YouTubeVideo {
         var streamQueries = streamMap?.componentsSeparatedByString(",") ?? [String]()
         if let formats = adaptiveFormats {
             streamQueries += formats.componentsSeparatedByString(",")
-        }
-        title = info["title"] ?? ""
-        if let duration = info["length_seconds"] {
-            self.duration = Int(duration) ?? 0
-        }
-        if let thumbnail = info["thumbnail_url"] ?? info["iurl"] {
-            thumbnailSmall = NSURL(string: thumbnail)
-        }
-        if let thumbnail = info["iurlsd"] ?? info["iurlhq"] ?? info["iurlmq"] {
-            thumbnailMedium = NSURL(string: thumbnail)
-        }
-        if let thumbnail = info["iurlmaxres"] {
-            thumbnailLarge = NSURL(string: thumbnail)
         }
         var streamURLs = [VideoQuality: NSURL]()
         if let liveStream = httpLiveStream, url = NSURL(string: liveStream) {
@@ -112,10 +99,20 @@ public class YouTubeVideo {
             throw YouTubeError.NoStreamAvailable(reason: nil)
         }
         self.streamURLs = streamURLs
-    }
-    
-    func mergeVideo(video: YouTubeVideo) {
-//        TODO: make sense
+        
+        title = info["title"]
+        if let duration = info["length_seconds"] {
+            self.duration = Int(duration) ?? 0
+        }
+        if let thumbnail = info["thumbnail_url"] ?? info["iurl"] {
+            thumbnailSmall = NSURL(string: thumbnail)
+        }
+        if let thumbnail = info["iurlsd"] ?? info["iurlhq"] ?? info["iurlmq"] {
+            thumbnailMedium = NSURL(string: thumbnail)
+        }
+        if let thumbnail = info["iurlmaxres"] {
+            thumbnailLarge = NSURL(string: thumbnail)
+        }
     }
 }
 
