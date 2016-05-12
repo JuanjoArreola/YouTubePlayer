@@ -20,6 +20,20 @@ public class YouTubeVideoPlayerController: AVPlayerViewController {
     
     var request: Request<VideoOperation>?
     
+    public var preferredQualities = [VideoQuality.LiveStreaming, VideoQuality.HD_720, VideoQuality.Medium_360, VideoQuality.Small_240]
+    public var youTubeVideo: YouTubeVideo? {
+        didSet {
+            guard let video = youTubeVideo else { return }
+            for quality in preferredQualities {
+                if let url = video.streamURLs[quality] {
+                    self.player = AVPlayer(URL: url)
+                    //                self.showsPlaybackControls = true
+                    break
+                }
+            }
+        }
+    }
+    
     var videoOperation: VideoOperation?
     public var videoIdentifier: String!
     
@@ -57,7 +71,7 @@ public class YouTubeVideoPlayerController: AVPlayerViewController {
         })
     }
     
-    private func playVideo(video: Video) {
+    public func playVideo(video: YouTubeVideo) {
         let videoQualities: [VideoQuality] = [VideoQuality.LiveStreaming, VideoQuality.HD_720, VideoQuality.Medium_360, VideoQuality.Small_240]
         for quality in videoQualities {
             if let url = video.streamURLs[quality] {

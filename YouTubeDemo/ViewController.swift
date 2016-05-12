@@ -24,40 +24,17 @@ class ViewController: UIViewController {
     }
 
     @IBAction func play(sender: AnyObject) {
-        let controller = YouTubeVideoPlayerController(videoIdentifier: "SfjLRuE1CLw")
-        controller.modalTransitionStyle = .CoverVertical
-        controller.modalPresentationStyle = .FullScreen
-        controller.showsPlaybackControls = false
-        controller.view.translatesAutoresizingMaskIntoConstraints = false
-        presentViewController(controller, animated: true) {
-            controller.startPlaying()
-            dispatch_async(dispatch_get_main_queue(), { 
-//                controller.showsPlaybackControls = true
-            })
-        }
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "YouTubeSegue" {
-            let controller = segue.destinationViewController as! AVPlayerViewController
-            VideoOperation.createWithVideoIdentifier("SfjLRuE1CLw", languageIdentifier: "en", completion: { (getOperation) in
-                do {
-                    let operation = try getOperation()
-                    let video = operation.video
-                    let videoQualities: [VideoQuality] = [VideoQuality.LiveStreaming, VideoQuality.HD_720, VideoQuality.Medium_360, VideoQuality.Small_240]
-                    for quality in videoQualities {
-                        if let url = video?.streamURLs[quality] {
-                            controller.player = AVPlayer(URL: url)
-                            controller.showsPlaybackControls = true
-                            controller.player?.play()
-                            break
-                        }
-                    }
-                    
-                } catch {
-//                    Log.error(error)
-                }
-            })
+        _ = YouTubeInfoRequest(videoIdentifier: "SfjLRuE1CLw") { [weak self] (getVideo) in
+            do {
+                let video = try getVideo()
+                let controller = YouTubeVideoPlayerController()
+                controller.youTubeVideo = video
+                self?.presentViewController(controller, animated: true, completion: { 
+                    controller.player?.play()
+                })
+            } catch {
+                
+            }
         }
     }
     

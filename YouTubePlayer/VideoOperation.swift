@@ -26,7 +26,7 @@ enum YouTubeError: ErrorType {
     case NotImplemented
 }
 
-private let processQueue = dispatch_queue_create("com.apic.ProcessQueue", DISPATCH_QUEUE_CONCURRENT)
+private let processQueue = dispatch_queue_create("com.youtubeplayer.ProcessQueue", DISPATCH_QUEUE_CONCURRENT)
 
 public class VideoOperation {
     
@@ -289,3 +289,4 @@ private func getVideoIdentifierFromURL(url: NSURL) throws -> String {
     }
     throw YouTubeError.InvalidURL
 }
+

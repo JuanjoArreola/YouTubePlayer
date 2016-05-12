@@ -22,7 +22,6 @@
 		81A7D3721CD5D38E004361F7 /* PlayerScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A7D3711CD5D38E004361F7 /* PlayerScript.swift */; };
 		81C4BBD51CD23B3B00E13831 /* YouTubeVideoPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C4BBD41CD23B3B00E13831 /* YouTubeVideoPlayerController.swift */; };
 		81CA947C1CC208EC006624B1 /* YouTubePlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 81CA947B1CC208EC006624B1 /* YouTubePlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		81CA94841CC20909006624B1 /* YouTubeClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CA94831CC20909006624B1 /* YouTubeClient.swift */; };
 		81CA94861CC20C2D006624B1 /* YouTubeVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CA94851CC20C2D006624B1 /* YouTubeVideo.swift */; };
 		81CA94881CC20C3E006624B1 /* VideoOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CA94871CC20C3E006624B1 /* VideoOperation.swift */; };
 		81DCB1A71CDE8B3F00B671D1 /* YouTubePlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81CA94781CC208EC006624B1 /* YouTubePlayer.framework */; };
@@ -81,7 +80,6 @@
 		81CA94781CC208EC006624B1 /* YouTubePlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YouTubePlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81CA947B1CC208EC006624B1 /* YouTubePlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YouTubePlayer.h; sourceTree = "<group>"; };
 		81CA947D1CC208EC006624B1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		81CA94831CC20909006624B1 /* YouTubeClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YouTubeClient.swift; sourceTree = "<group>"; };
 		81CA94851CC20C2D006624B1 /* YouTubeVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YouTubeVideo.swift; sourceTree = "<group>"; };
 		81CA94871CC20C3E006624B1 /* VideoOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoOperation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -160,7 +158,6 @@
 			children = (
 				81CA947B1CC208EC006624B1 /* YouTubePlayer.h */,
 				81CA947D1CC208EC006624B1 /* Info.plist */,
-				81CA94831CC20909006624B1 /* YouTubeClient.swift */,
 				81CA94851CC20C2D006624B1 /* YouTubeVideo.swift */,
 				81CA94871CC20C3E006624B1 /* VideoOperation.swift */,
 				81A522591CC87FE700C651A3 /* VideoWebPage.swift */,
@@ -334,7 +331,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				81CA94881CC20C3E006624B1 /* VideoOperation.swift in Sources */,
-				81CA94841CC20909006624B1 /* YouTubeClient.swift in Sources */,
 				81A7D35D1CD58AEE004361F7 /* Log.swift in Sources */,
 				81A7D3611CD591DB004361F7 /* Networking.swift in Sources */,
 				81C4BBD51CD23B3B00E13831 /* YouTubeVideoPlayerController.swift in Sources */,
