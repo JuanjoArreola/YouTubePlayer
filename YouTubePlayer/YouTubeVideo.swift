@@ -28,6 +28,7 @@ public enum VideoQuality {
         case "36": return .Small_240
         case "18": return .Medium_360
         case "22": return .HD_720
+        case "HTTPLiveStreaming": return .LiveStreaming
         default:
             return nil
         }

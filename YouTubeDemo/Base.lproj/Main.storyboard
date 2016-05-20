@@ -17,18 +17,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YKk-Mv-SWg">
-                                <rect key="frame" x="285" y="114" width="30" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YKk-Mv-SWg">
+                                <rect key="frame" x="285" y="158" width="30" height="30"/>
                                 <state key="normal" title="Play"/>
                                 <connections>
                                     <action selector="play:" destination="BYZ-38-t0r" eventType="touchUpInside" id="d8K-Qs-xJc"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3ds-TW-PGV">
-                                <rect key="frame" x="277" y="152" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3ds-TW-PGV">
+                                <rect key="frame" x="262" y="196" width="76" height="30"/>
+                                <state key="normal" title="local m3u8"/>
                                 <connections>
-                                    <segue destination="oq1-xB-GRi" kind="presentation" identifier="YouTubeSegue" modalPresentationStyle="fullScreen" id="g1Y-Ds-NTd"/>
+                                    <action selector="localm3u8:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eEq-mK-yVZ"/>
                                 </connections>
                             </button>
                         </subviews>

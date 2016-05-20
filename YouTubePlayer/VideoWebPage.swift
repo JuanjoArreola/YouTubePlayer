@@ -70,15 +70,6 @@ class VideoWebpage {
         return nil
     }
     
-//    private func getRegionsAllowed() -> Set<String> {
-//        if let result = regionsRegex.firstMatchInString(self.html, options: [], range: self.htmlRange) {
-//            if result.numberOfRanges > 1 {
-//                let regions = html.substringWithNSRange(result.range)
-//                return Set<String>(regions.componentsSeparatedByString(","))
-//            }
-//        }
-//        return Set<String>()
-//    }
 }
 
 extension String {
