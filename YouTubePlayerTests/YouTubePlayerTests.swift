@@ -7,13 +7,14 @@
 //
 
 import XCTest
-@testable import YouTubePlayer
+import YouTubePlayer
 
 class YouTubePlayerTests: XCTestCase {
     
+    let dataRepository = YouTubeDataRepository(key: "")
+    
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
     }
     
     override func tearDown() {
@@ -21,12 +22,26 @@ class YouTubePlayerTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        let expectation = expectationWithDescription("video")
-        VideoOperation.createWithVideoIdentifier("SfjLRuE1CLw", languageIdentifier: "en") { (getOperation) in
+//    func testGetYouTubeVideo() {
+//        let expectation = expectationWithDescription("video")
+//        VideoOperation.createWithVideoIdentifier("SfjLRuE1CLw", languageIdentifier: "en") { (getOperation) in
+//            do {
+//                let operation = try getOperation()
+//                Log.debug(operation)
+//                expectation.fulfill()
+//            } catch {
+//                Log.error(error)
+//            }
+//        }
+//        waitForExpectationsWithTimeout(2, handler: nil)
+//    }
+    
+    func testGetVideoInfo() {
+        let expectation = expectationWithDescription("info")
+        dataRepository.requestVideoInfo("SfjLRuE1CLw") { (getSnippet) in
             do {
-                let operation = try getOperation()
-                Log.debug(operation)
+                let snippet = try getSnippet()
+                Log.debug(snippet.thumbnails.`default`)
                 expectation.fulfill()
             } catch {
                 Log.error(error)

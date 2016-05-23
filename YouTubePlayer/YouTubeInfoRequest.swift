@@ -18,6 +18,7 @@ enum YouTubeError: ErrorType {
     case InvalidWebpage
     case NotImplemented
     case InvalidQuality
+    case InvalidResponse
 }
 
 private let processQueue = dispatch_queue_create("com.youtubeplayer.ProcessQueue", DISPATCH_QUEUE_CONCURRENT)

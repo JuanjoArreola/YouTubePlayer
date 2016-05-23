@@ -1,13 +1,13 @@
 platform :ios, '8.0'
+use_frameworks!
 
 target 'YouTubeDemo' do
-  use_frameworks!
+  
 end
 
 target 'YouTubePlayer' do
-  use_frameworks!
 
-  pod 'Apic'
+  pod 'Apic', :path => '../Apic'
 
   target 'YouTubePlayerTests' do
     inherit! :search_paths
