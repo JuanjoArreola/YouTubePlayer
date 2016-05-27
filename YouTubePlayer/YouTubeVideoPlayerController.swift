@@ -19,6 +19,7 @@ public class YouTubeVideoPlayerController: AVPlayerViewController {
     weak var youtubeDelegate: YouTubeVideoPlayerController?
     
     var request: YouTubeInfoRequest?
+    var previousStatusBarStyle = UIApplication.sharedApplication().statusBarStyle
     
     public var preferredQualities = [VideoQuality.LiveStreaming, VideoQuality.HD_720, VideoQuality.Medium_360, VideoQuality.Small_240]
     public var youTubeVideo: YouTubeVideo?
@@ -34,6 +35,22 @@ public class YouTubeVideoPlayerController: AVPlayerViewController {
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+    }
+    
+    public override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if previousStatusBarStyle == .LightContent {
+            UIApplication.sharedApplication().setStatusBarStyle(.Default, animated: animated)
+        }
+    }
+    
+    public override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if previousStatusBarStyle == .LightContent {
+            UIApplication.sharedApplication().setStatusBarStyle(previousStatusBarStyle, animated: animated)
+        }
     }
     
     public func setYouTubeVideo(video: YouTubeVideo) throws {

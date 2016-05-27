@@ -13,11 +13,7 @@ private let regionsRegex = try! NSRegularExpression(pattern: "meta\\s+itemprop=\
 
 class VideoWebpage {
     
-    var html: String! {
-        didSet {
-            htmlRange = NSMakeRange(0, html.characters.count)
-        }
-    }
+    var html: String!
     var htmlRange: NSRange!
     var playerConfiguration: [String: AnyObject]?
     var videoInfo: [String: AnyObject]?
@@ -26,7 +22,8 @@ class VideoWebpage {
     var regionsAllowed = Set<String>()
     
     init?(htmlString: String) {
-        self.html = htmlString
+        html = htmlString
+        htmlRange = NSMakeRange(0, html.characters.count)
         playerConfiguration = getPlayerConfigurationFromHtml(htmlString)
         
         if let configuration = playerConfiguration {

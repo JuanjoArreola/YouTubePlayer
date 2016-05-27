@@ -15,7 +15,7 @@ public class Snippet: AbstractModel {
     public var _description: String!
     public var thumbnails: Thumbnails!
     public var channelTitle: String?
-    public var tags: [String]!
+    public var tags: [String]?
     public var categoryId: String!
     public var liveBroadcastContent: String?
     public var defaultAudioLanguage: String?
@@ -26,6 +26,6 @@ public class Snippet: AbstractModel {
     override public static var dateFormats: [String] { return ["y-MM-dd'T'HH:mm:ss.SSSZ"] }
     
     override public func shouldFailWithInvalidValue(value: AnyObject?, forProperty property: String) -> Bool {
-        return ["channelId", "title", "thumbnails", "tags", "categoryId", "publishedAt"].contains(property)
+        return ["channelId", "title", "thumbnails", "categoryId", "publishedAt"].contains(property)
     }
 }
