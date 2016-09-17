@@ -14,7 +14,7 @@ class PlayerScript {
         
     }
     
-    func unscrambleSignature(signature: String) -> String? {
+    func unscrambleSignature(_ signature: String) -> String? {
         return nil
     }
 }

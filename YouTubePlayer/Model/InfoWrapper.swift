@@ -8,13 +8,13 @@
 
 import Apic
 
-public class InfoWrapper: AbstractModel {
-    public var items: [VideoInfo]!
+open class InfoWrapper: AbstractModel {
+    open var items: [VideoInfo]!
     
-    override public static var dateFormats: [String] { return ["y-MM-dd'T'HH:mm:ss.SSSZ"] }
-    override public static var resolver: TypeResolver? { return DefaultResolver.sharedResolver }
+    override open static var dateFormats: [String] { return ["y-MM-dd'T'HH:mm:ss.SSSZ"] }
+    override open static var resolver: TypeResolver? { return DefaultResolver.sharedResolver }
     
-    override public func shouldFailWithInvalidValue(value: AnyObject?, forProperty property: String) -> Bool {
+    open override func shouldFail(withInvalidValue value: Any?, forProperty property: String) -> Bool {
         return true
     }
 }

@@ -8,30 +8,30 @@
 
 import Apic
 
-public class Thumbnails: AbstractModel {
-    public var `default`: Thumbnail?
-    public var medium: Thumbnail?
-    public var high: Thumbnail?
-    public var standard: Thumbnail?
-    public var maxres: Thumbnail?
+open class Thumbnails: AbstractModel {
+    open var `default`: Thumbnail?
+    open var medium: Thumbnail?
+    open var high: Thumbnail?
+    open var standard: Thumbnail?
+    open var maxres: Thumbnail?
     
-    override public static var resolver: TypeResolver? { return DefaultResolver.sharedResolver }
+    override open static var resolver: TypeResolver? { return DefaultResolver.sharedResolver }
     
-    public var bestResolutionThumbnail: Thumbnail? {
+    open var bestResolutionThumbnail: Thumbnail? {
         return maxres ?? standard ?? high ?? medium ?? `default`
     }
 }
 
-public class Thumbnail: AbstractModel {
-    public var url: NSURL!
-    public var width: Int = 0
-    public var height: Int = 0
+open class Thumbnail: AbstractModel {
+    open var url: URL!
+    open var width: Int = 0
+    open var height: Int = 0
     
-    override public func shouldFailWithInvalidValue(value: AnyObject?, forProperty property: String) -> Bool {
+    open override func shouldFail(withInvalidValue value: Any?, forProperty property: String) -> Bool {
         return true
     }
     
-    public override var debugDescription: String {
+    open override var debugDescription: String {
         return "Thumbnail(\(width)x\(height)): \(url)"
     }
 }

@@ -8,39 +8,39 @@
 
 import Foundation
 
-enum FetchError: ErrorType {
-    case InvalidData
-    case ParseError
-    case NotFound
-    case NotImplemented
+enum FetchError: Error {
+    case invalidData
+    case parseError
+    case notFound
+    case notImplemented
 }
 
-func requestURL(url: NSURL, completion: ((data: NSData?, response: NSURLResponse?, error:NSError?)) -> Void) -> NSURLSessionDataTask {
-    let request = NSMutableURLRequest(URL: url, cachePolicy: .UseProtocolCachePolicy, timeoutInterval: 10)
+func request(url: URL, completion: @escaping ((data: Data?, response: URLResponse?, error: Error?)) -> Void) -> URLSessionDataTask {
+    let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10)
     
-    let task = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: completion)
+    let task = URLSession.shared.dataTask(with: request, completionHandler: completion)
     task.resume()
     return task
 }
 
-func startRequestWithURL(url: NSURL, completion: (getResult: () throws -> (data: NSData, response: NSURLResponse?)) -> Void) -> Cancellable {
-    let request = URLRequest<(data: NSData, response: NSURLResponse?)>(completionHandler: completion)
-    request.dataTask = requestURL(url) { (data: NSData?, response: NSURLResponse?, error: NSError?) in
+func startRequest(with url: URL, completion: @escaping (_ getResult: () throws -> (data: Data, response: URLResponse?)) -> Void) -> Cancellable {
+    let dataRequest = URLSessionDataTaskRequest<(data: Data, response: URLResponse?)>(completionHandler: completion)
+    dataRequest.dataTask = request(url: url) { (data: Data?, response: URLResponse?, error: Error?) in
         do {
             if let error = error {
                 throw error
             }
             guard let validData = data else {
-                throw FetchError.InvalidData
+                throw FetchError.invalidData
             }
-            dispatch_async(dispatch_get_main_queue()) {
-                request.completeWithObject((data: validData, response: response))
+            DispatchQueue.main.async {
+                dataRequest.complete(withObject: (data: validData, response: response))
             }
         } catch {
-            dispatch_async(dispatch_get_main_queue()) {
-                request.completeWithError(error)
+            DispatchQueue.main.async {
+                dataRequest.complete(withError: error)
             }
         }
     }
-    return request
+    return dataRequest
 }

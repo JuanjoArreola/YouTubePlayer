@@ -8,24 +8,24 @@
 
 import Apic
 
-public class Snippet: AbstractModel {
-    public var publishedAt: NSDate!
-    public var channelId: String!
-    public var title: String!
-    public var _description: String!
-    public var thumbnails: Thumbnails!
-    public var channelTitle: String?
-    public var tags: [String]?
-    public var categoryId: String!
-    public var liveBroadcastContent: String?
-    public var defaultAudioLanguage: String?
-    public var localized: LocalizedVideoInfo?
+open class Snippet: AbstractModel {
+    open var publishedAt: Date!
+    open var channelId: String!
+    open var title: String!
+    open var _description: String!
+    open var thumbnails: Thumbnails!
+    open var channelTitle: String?
+    open var tags: [String]?
+    open var categoryId: String!
+    open var liveBroadcastContent: String?
+    open var defaultAudioLanguage: String?
+    open var localized: LocalizedVideoInfo?
     
-    override public static var descriptionProperty: String { return "_description" }
-    override public static var resolver: TypeResolver? { return DefaultResolver.sharedResolver }
-    override public static var dateFormats: [String] { return ["y-MM-dd'T'HH:mm:ss.SSSZ"] }
+    override open static var descriptionProperty: String { return "_description" }
+    override open static var resolver: TypeResolver? { return DefaultResolver.sharedResolver }
+    override open static var dateFormats: [String] { return ["y-MM-dd'T'HH:mm:ss.SSSZ"] }
     
-    override public func shouldFailWithInvalidValue(value: AnyObject?, forProperty property: String) -> Bool {
+    open override func shouldFail(withInvalidValue value: Any?, forProperty property: String) -> Bool {
         return ["channelId", "title", "thumbnails", "categoryId", "publishedAt"].contains(property)
     }
 }

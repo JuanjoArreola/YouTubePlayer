@@ -8,7 +8,28 @@
 
 import Foundation
 
-private let playerConfigRegularExpression = try! NSRegularExpression(pattern: "ytplayer.config\\s*=\\s*(\\{.*?\\});|\\(\\s*'PLAYER_CONFIG',\\s*(\\{.*?\\})\\s*\\)", options: [.CaseInsensitive])
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
+
+private let playerConfigRegularExpression = try! NSRegularExpression(pattern: "ytplayer.config\\s*=\\s*(\\{.*?\\});|\\(\\s*'PLAYER_CONFIG',\\s*(\\{.*?\\})\\s*\\)", options: [.caseInsensitive])
 private let regionsRegex = try! NSRegularExpression(pattern: "meta\\s+itemprop=\"regionsAllowed\"\\s+content=\"(.*)\"", options: [])
 
 class VideoWebpage {
@@ -17,41 +38,41 @@ class VideoWebpage {
     var htmlRange: NSRange!
     var playerConfiguration: [String: AnyObject]?
     var videoInfo: [String: AnyObject]?
-    var javascriptPlayerURL: NSURL?
+    var javascriptPlayerURL: URL?
     var isAgeRestricted: Bool = false
     var regionsAllowed = Set<String>()
     
     init?(htmlString: String) {
         html = htmlString
         htmlRange = NSMakeRange(0, html.characters.count)
-        playerConfiguration = getPlayerConfigurationFromHtml(htmlString)
+        playerConfiguration = getPlayerConfiguration(fromHtml: htmlString)
         
         if let configuration = playerConfiguration {
-            videoInfo = getVideoInfoWithConfiguration(configuration)
+            videoInfo = getVideoInfo(withConfiguration: configuration)
         }
         if let jsAssets = playerConfiguration?["assets.js"] as? String {
             if jsAssets.hasPrefix("//") {
-                javascriptPlayerURL = NSURL(string: "https:\(jsAssets)")
+                javascriptPlayerURL = URL(string: "https:\(jsAssets)")
             }
         }
-        isAgeRestricted = htmlString.rangeOfString("og:restrictions:age") != nil
+        isAgeRestricted = htmlString.range(of: "og:restrictions:age") != nil
         
-        let match = regionsRegex.firstMatchInString(htmlString, options: [], range: htmlRange)
+        let match = regionsRegex.firstMatch(in: htmlString, options: [], range: htmlRange)
         if match?.numberOfRanges > 1 {
-            let regions = html.substringWithNSRange(match!.rangeAtIndex(1))
-            regionsAllowed = Set<String>(regions.componentsSeparatedByString(","))
+            let regions = html.substring(with: match!.rangeAt(1))
+            regionsAllowed = Set<String>(regions.components(separatedBy: ","))
         }
         
     }
     
-    private func getPlayerConfigurationFromHtml(html: String) -> [String: AnyObject]? {
-        let results = playerConfigRegularExpression.matchesInString(html, options: [], range: htmlRange)
+    fileprivate func getPlayerConfiguration(fromHtml html: String) -> [String: AnyObject]? {
+        let results = playerConfigRegularExpression.matches(in: html, options: [], range: htmlRange)
         for result in results {
             do {
                 if result.range.length == 0 { continue }
-                let configString = html.substringWithNSRange(result.range)
-                let configData = configString.dataUsingEncoding(NSUTF8StringEncoding) ?? NSData()
-                let playerConfiguration = try NSJSONSerialization.JSONObjectWithData(configData, options: [])
+                let configString = html.substring(with: result.range)
+                let configData = configString.data(using: String.Encoding.utf8) ?? Data()
+                let playerConfiguration = try JSONSerialization.jsonObject(with: configData, options: [])
                 if playerConfiguration is [String: AnyObject] {
                     return playerConfiguration as? [String: AnyObject]
                 }
@@ -60,7 +81,7 @@ class VideoWebpage {
         return nil
     }
     
-    private func getVideoInfoWithConfiguration(configuration: [String: AnyObject]) -> [String: AnyObject]? {
+    fileprivate func getVideoInfo(withConfiguration configuration: [String: AnyObject]) -> [String: AnyObject]? {
         if let args = configuration["args"] as? [String: AnyObject] {
             return args
         }
@@ -70,9 +91,10 @@ class VideoWebpage {
 }
 
 extension String {
-    func substringWithNSRange(range: NSRange) -> String {
-        let start = self.startIndex.advancedBy(range.location)
-        return self.substringWithRange(start...start.advancedBy(range.length))
+    func substring(with range: NSRange) -> String {
+        let start = self.index(self.startIndex, offsetBy: range.location)
+        let range = start..<self.index(start, offsetBy: range.length)
+
+        return self.substring(with: range)
     }
 }
-

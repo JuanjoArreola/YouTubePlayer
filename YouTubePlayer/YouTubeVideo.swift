@@ -9,42 +9,42 @@
 import Foundation
 
 public enum VideoQuality {
-    case LiveStreaming
-    case Small_240
-    case Medium_360
-    case HD_720
+    case liveStreaming
+    case small_240
+    case medium_360
+    case hd_720
     
     func value() -> AnyObject {
         switch self {
-        case .LiveStreaming: return "HTTPLiveStreaming"
-        case .Small_240: return 36
-        case .Medium_360: return 18
-        case .HD_720: return 22
+        case .liveStreaming: return "HTTPLiveStreaming" as AnyObject
+        case .small_240: return 36 as AnyObject
+        case .medium_360: return 18 as AnyObject
+        case .hd_720: return 22 as AnyObject
         }
     }
     
-    static func qualityFromString(string: String) -> VideoQuality? {
+    static func qualityFromString(_ string: String) -> VideoQuality? {
         switch string {
-        case "36": return .Small_240
-        case "18": return .Medium_360
-        case "22": return .HD_720
-        case "HTTPLiveStreaming": return .LiveStreaming
+        case "36": return .small_240
+        case "18": return .medium_360
+        case "22": return .hd_720
+        case "HTTPLiveStreaming": return .liveStreaming
         default:
             return nil
         }
     }
 }
 
-public class YouTubeVideo {
+open class YouTubeVideo {
     let identifier: String
     var title: String?
-    public let streamURLs: [VideoQuality: NSURL]
+    open let streamURLs: [VideoQuality: URL]
     
     var duration: Int = 0
-    var thumbnailSmall: NSURL?
-    var thumbnailMedium: NSURL?
-    var thumbnailLarge: NSURL?
-    var expirationDate: NSDate?
+    var thumbnailSmall: URL?
+    var thumbnailMedium: URL?
+    var thumbnailLarge: URL?
+    var expirationDate: Date?
     
     init(identifier: String, info: [String: String], playerScript: PlayerScript?) throws {
         self.identifier = identifier
@@ -53,42 +53,42 @@ public class YouTubeVideo {
         let httpLiveStream = info["hlsvp"]
         let adaptiveFormats = info["adaptive_fmts"]
         if (streamMap?.isEmpty ?? true) && (httpLiveStream?.isEmpty ?? true) {
-            throw YouTubeError.NoStreamAvailable(reason: info["reason"])
+            throw YouTubeError.noStreamAvailable(reason: info["reason"])
         }
-        var streamQueries = streamMap?.componentsSeparatedByString(",") ?? [String]()
+        var streamQueries = streamMap?.components(separatedBy: ",") ?? [String]()
         if let formats = adaptiveFormats {
-            streamQueries += formats.componentsSeparatedByString(",")
+            streamQueries += formats.components(separatedBy: ",")
         }
-        var streamURLs = [VideoQuality: NSURL]()
-        if let liveStream = httpLiveStream, url = NSURL(string: liveStream) {
-            streamURLs[.LiveStreaming] = url
+        var streamURLs = [VideoQuality: URL]()
+        if let liveStream = httpLiveStream, let url = URL(string: liveStream) {
+            streamURLs[.liveStreaming] = url
         }
         
         for streamQuery in streamQueries {
-            let stream = dictionaryFromResponse(streamQuery)
+            let stream = dictionary(fromResponse: streamQuery)
             
             var signature: String?
             if let scrambledSignature = stream["s"] {
                 if playerScript == nil {
-                    throw YouTubeError.SignatureError
+                    throw YouTubeError.signatureError
                 }
                 signature = playerScript?.unscrambleSignature(scrambledSignature)
                 if signature == nil {
                     continue
                 }
             }
-            if let urlString = stream["url"], itag = stream["itag"], url = NSURL(string: urlString) {
+            if let urlString = stream["url"], let itag = stream["itag"], let url = URL(string: urlString) {
                 if expirationDate == nil {
-                    expirationDate = expirationFromURL(url)
+                    expirationDate = expiration(from: url)
                 }
                 guard let quality = VideoQuality.qualityFromString(itag) else {
                     continue
                 }
                 if let signature = signature {
-                    let escapedSignature = signature.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
-                    let components = NSURLComponents(URL: url, resolvingAgainstBaseURL: false)
-                    components?.queryItems?.append(NSURLQueryItem(name: "signature", value: escapedSignature))
-                    if let url = components?.URL {
+                    let escapedSignature = signature.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
+                    var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                    components?.queryItems?.append(URLQueryItem(name: "signature", value: escapedSignature))
+                    if let url = components?.url {
                         streamURLs[quality] = url
                     }
                 } else {
@@ -97,7 +97,7 @@ public class YouTubeVideo {
             }
         }
         if streamURLs.isEmpty {
-            throw YouTubeError.NoStreamAvailable(reason: nil)
+            throw YouTubeError.noStreamAvailable(reason: nil)
         }
         self.streamURLs = streamURLs
         
@@ -106,23 +106,23 @@ public class YouTubeVideo {
             self.duration = Int(duration) ?? 0
         }
         if let thumbnail = info["thumbnail_url"] ?? info["iurl"] {
-            thumbnailSmall = NSURL(string: thumbnail)
+            thumbnailSmall = URL(string: thumbnail)
         }
         if let thumbnail = info["iurlsd"] ?? info["iurlhq"] ?? info["iurlmq"] {
-            thumbnailMedium = NSURL(string: thumbnail)
+            thumbnailMedium = URL(string: thumbnail)
         }
         if let thumbnail = info["iurlmaxres"] {
-            thumbnailLarge = NSURL(string: thumbnail)
+            thumbnailLarge = URL(string: thumbnail)
         }
     }
 }
 
-func expirationFromURL(url: NSURL) -> NSDate? {
-    let components = NSURLComponents(URL: url, resolvingAgainstBaseURL: false)
+func expiration(from url: URL) -> Date? {
+    let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
     for query in components?.queryItems ?? [] {
         if query.name == "expire" {
-            if let stringTime = query.value, time = Double(stringTime) {
-                return NSDate(timeIntervalSince1970: time)
+            if let stringTime = query.value, let time = Double(stringTime) {
+                return Date(timeIntervalSince1970: time)
             }
             break
         }

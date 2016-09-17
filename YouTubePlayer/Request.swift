@@ -8,22 +8,22 @@
 
 import Foundation
 
-internal let syncQueue: dispatch_queue_t = dispatch_queue_create("com.youtubeplayer.SyncQueue", DISPATCH_QUEUE_CONCURRENT)
+internal let syncQueue: DispatchQueue = DispatchQueue(label: "com.youtubeplayer.SyncQueue", attributes: DispatchQueue.Attributes.concurrent)
 
-enum RequestError: ErrorType {
-    case Canceled
+enum RequestError: Error {
+    case canceled
 }
 
 public protocol Cancellable {
     func cancel()
 }
 
-public class Request<T: Any>: Cancellable, CustomDebugStringConvertible {
+open class Request<T: Any>: Cancellable, CustomDebugStringConvertible {
     
-    var completionHandlers: [(getObject: () throws -> T) -> Void]? = []
+    var completionHandlers: [(_ getObject: () throws -> T) -> Void]? = []
     private var result: (() throws -> T)?
     
-    public var subrequest: Cancellable? {
+    open var subrequest: Cancellable? {
         didSet {
             if cancelled {
                 subrequest?.cancel()
@@ -31,33 +31,31 @@ public class Request<T: Any>: Cancellable, CustomDebugStringConvertible {
         }
     }
     
-    public var completed: Bool {
+    open var completed: Bool {
         return result != nil
     }
     
-    public var cancelled = false
+    open var cancelled = false
     
-    required public init() {}
-    
-    public convenience init(completionHandler: (getObject: () throws -> T) -> Void) {
+    public convenience init(completionHandler: @escaping (_ getObject: () throws -> T) -> Void) {
         self.init()
         completionHandlers!.append(completionHandler)
     }
     
-    public func cancel() {
+    open func cancel() {
         sync() { self.cancelled = true }
         subrequest?.cancel()
-        completeWithError(RequestError.Canceled)
+        complete(withError: RequestError.canceled)
     }
     
-    public func completeWithObject(object: T) {
+    open func complete(withObject object: T) {
         if result == nil {
             result = { return object }
             callHandlers()
         }
     }
     
-    public func completeWithError(error: ErrorType) {
+    open func complete(withError error: Error) {
         if result == nil {
             result = { throw error }
             callHandlers()
@@ -67,44 +65,44 @@ public class Request<T: Any>: Cancellable, CustomDebugStringConvertible {
     func callHandlers() {
         guard let getClosure = result else { return }
         for handler in completionHandlers! {
-            handler(getObject: getClosure)
+            handler(getClosure)
         }
         sync() { self.completionHandlers = nil }
     }
     
-    public func addCompletionHandler(completion: (getObject: () throws -> T) -> Void) {
+    open func add(completionHandler completion: @escaping (_ getObject: () throws -> T) -> Void) {
         if let getClosure = result {
-            completion(getObject: getClosure)
+            completion(getClosure)
         } else {
             sync() { self.completionHandlers?.append(completion) }
         }
     }
     
-    public var debugDescription: String {
-        return String(self)
+    open var debugDescription: String {
+        return String(describing: self)
     }
 }
 
-private func sync(closure: () -> Void) {
-    dispatch_barrier_async(syncQueue, closure)
+private func sync(_ closure: @escaping () -> Void) {
+    syncQueue.async(flags: .barrier, execute: closure)
 }
 
 
-public class URLRequest<T: Any>: Request<T> {
+open class URLSessionDataTaskRequest<T: Any>: Request<T> {
     
-    var dataTask: NSURLSessionDataTask?
+    var dataTask: URLSessionDataTask?
     
-    required public init() {}
+//    required public override init() {}
     
-    override public func cancel() {
-        Log.debug("Cancelling: \(dataTask?.originalRequest?.URL)")
+    override open func cancel() {
+        Log.debug("Cancelling: \(dataTask?.originalRequest?.url)")
         dataTask?.cancel()
         super.cancel()
     }
     
-    override public var debugDescription: String {
+    override open var debugDescription: String {
         var desc = "URLRequest<\(T.self)>"
-        if let url = dataTask?.originalRequest?.URL {
+        if let url = dataTask?.originalRequest?.url {
             desc += "(\(url))"
         }
         return desc

@@ -11,25 +11,25 @@ import MediaPlayer
 import AVKit
 
 protocol YouTubeVideoPlayerControllerDelegate: class {
-    func youTubeVideoPlayerController(controller: YouTubeVideoPlayerController, didFailWithError: ErrorType)
+    func youTubeVideoPlayerController(_ controller: YouTubeVideoPlayerController, didFailWithError: Error)
 }
 
-public class YouTubeVideoPlayerController: AVPlayerViewController {
+open class YouTubeVideoPlayerController: AVPlayerViewController {
     
     weak var youtubeDelegate: YouTubeVideoPlayerController?
     
     var request: YouTubeInfoRequest?
-    var previousStatusBarStyle = UIApplication.sharedApplication().statusBarStyle
+    var previousStatusBarStyle = UIApplication.shared.statusBarStyle
     
-    public var preferredQualities = [VideoQuality.LiveStreaming, VideoQuality.HD_720, VideoQuality.Medium_360, VideoQuality.Small_240]
-    public var youTubeVideo: YouTubeVideo?
+    open var preferredQualities = [VideoQuality.liveStreaming, VideoQuality.hd_720, VideoQuality.medium_360, VideoQuality.small_240]
+    open var youTubeVideo: YouTubeVideo?
     
     public required convenience init(youTubeVideo: YouTubeVideo) throws {
         self.init()
         try setYouTubeVideo(youTubeVideo)
     }
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
@@ -37,34 +37,34 @@ public class YouTubeVideoPlayerController: AVPlayerViewController {
         super.init(coder: aDecoder)
     }
     
-    public override func viewWillAppear(animated: Bool) {
+    open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if previousStatusBarStyle == .LightContent {
-            UIApplication.sharedApplication().setStatusBarStyle(.Default, animated: animated)
+        if previousStatusBarStyle == .lightContent {
+            UIApplication.shared.setStatusBarStyle(.default, animated: animated)
         }
     }
     
-    public override func viewWillDisappear(animated: Bool) {
+    open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if previousStatusBarStyle == .LightContent {
-            UIApplication.sharedApplication().setStatusBarStyle(previousStatusBarStyle, animated: animated)
+        if previousStatusBarStyle == .lightContent {
+            UIApplication.shared.setStatusBarStyle(previousStatusBarStyle, animated: animated)
         }
     }
     
-    public func setYouTubeVideo(video: YouTubeVideo) throws {
+    open func setYouTubeVideo(_ video: YouTubeVideo) throws {
         self.youTubeVideo = video
         for quality in preferredQualities {
             if let url = video.streamURLs[quality] {
-                self.player = AVPlayer(URL: url)
+                self.player = AVPlayer(url: url)
                 return
             }
         }
-        throw YouTubeError.InvalidQuality
+        throw YouTubeError.invalidQuality
     }
     
-    public func play() {
+    open func play() {
         self.player?.play()
     }
     

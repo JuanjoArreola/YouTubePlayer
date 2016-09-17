@@ -8,13 +8,13 @@
 
 import Apic
 
-public class LocalizedVideoInfo: AbstractModel {
-    public var title: String!
-    public var _description: String!
+open class LocalizedVideoInfo: AbstractModel {
+    open var title: String!
+    open var _description: String!
     
-    override public static var descriptionProperty: String { return "_description" }
+    override open static var descriptionProperty: String { return "_description" }
     
-    override public func shouldFailWithInvalidValue(value: AnyObject?, forProperty property: String) -> Bool {
+    open override func shouldFail(withInvalidValue value: Any?, forProperty property: String) -> Bool {
         return true
     }
 }

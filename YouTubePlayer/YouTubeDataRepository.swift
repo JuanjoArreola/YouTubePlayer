@@ -8,11 +8,11 @@
 
 import Apic
 
-public class YouTubeDataRepository: AbstractRepository<String> {
+open class YouTubeDataRepository: AbstractRepository<String> {
     
     var key: String
     
-    override private init(objectKey: String?, objectsKey: String?, statusKey: String?, statusOk: String?, errorDescriptionKey: String?, errorCodeKey: String?) {
+    override fileprivate init(objectKey: String?, objectsKey: String?, statusKey: String?, statusOk: String?, errorDescriptionKey: String?, errorCodeKey: String?) {
         self.key = ""
         super.init()
     }
@@ -21,16 +21,16 @@ public class YouTubeDataRepository: AbstractRepository<String> {
         self.key = key
     }
     
-    public func requestVideoInfo(videoId: String, completion: (getSnippet: () throws -> Snippet) -> Void) -> ApicRequest<Snippet> {
+    open func requestVideoInfo(videoId: String, completion: @escaping (_ getSnippet: () throws -> Snippet) -> Void) -> ApicRequest<Snippet> {
         let request = ApicRequest<Snippet>(completionHandler: completion)
-        let params: [String: AnyObject] = ["id": videoId, "key": key, "part": "snippet"]
-        request.subrequest = requestObject(.GET, url: "https://www.googleapis.com/youtube/v3/videos", params: params) { (getObject: () throws -> InfoWrapper) -> Void in
+        let params: [String: Any] = ["id": videoId, "key": key, "part": "snippet"]
+        request.subrequest = requestObject(method: .GET, url: "https://www.googleapis.com/youtube/v3/videos", params: params) { (getObject: () throws -> InfoWrapper) -> Void in
             do {
                 let infoWrapper = try getObject()
-                guard let snippet = infoWrapper.items.first?.snippet else { throw YouTubeError.InvalidResponse }
-                request.completeWithObject(snippet)
+                guard let snippet = infoWrapper.items.first?.snippet else { throw YouTubeError.invalidResponse }
+                request.complete(withObject: snippet)
             } catch {
-                request.completeWithError(error)
+                request.complete(withError: error)
             }
         }
         return request
