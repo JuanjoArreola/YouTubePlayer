@@ -17,7 +17,11 @@ open class Thumbnails: AbstractModel {
     
     override open static var resolver: TypeResolver? { return DefaultResolver.sharedResolver }
     
-    open var bestResolutionThumbnail: Thumbnail? {
+    open override func shouldFail(withInvalidValue value: Any?, forProperty property: String) -> Bool {
+        return false
+    }
+    
+    public var bestResolutionThumbnail: Thumbnail? {
         return maxres ?? standard ?? high ?? medium ?? `default`
     }
 }
