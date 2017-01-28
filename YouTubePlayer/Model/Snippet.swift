@@ -21,7 +21,7 @@ open class Snippet: AbstractModel {
     open var defaultAudioLanguage: String?
     open var localized: LocalizedVideoInfo?
     
-    override open static var descriptionProperty: String { return "_description" }
+    open override static var propertyKeys: [String: String] { return ["_description": "description"]}
     override open static var resolver: TypeResolver? { return DefaultResolver.sharedResolver }
     override open static var dateFormats: [String] { return ["y-MM-dd'T'HH:mm:ss.SSSZ"] }
     
