@@ -23,7 +23,7 @@ open class Snippet: AbstractModel {
     
     open override static var propertyKeys: [String: String] { return ["_description": "description"]}
     override open static var resolver: TypeResolver? { return DefaultResolver.sharedResolver }
-    override open static var dateFormats: [String] { return ["y-MM-dd'T'HH:mm:ss.SSSZ"] }
+    override open static var propertyDateFormats: [String: String] { return ["publishedAt": "y-MM-dd'T'HH:mm:ss.SSSZ"] }
     
     open override func shouldFail(withInvalidValue value: Any?, forProperty property: String) -> Bool {
         return ["channelId", "title", "thumbnails", "categoryId", "publishedAt"].contains(property)
