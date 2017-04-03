@@ -16,6 +16,7 @@
 		8113321D1CF2BC73000645F6 /* Thumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8113321C1CF2BC73000645F6 /* Thumbnail.swift */; };
 		8113321F1CF2BCD6000645F6 /* LocalizedVideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8113321E1CF2BCD6000645F6 /* LocalizedVideoInfo.swift */; };
 		812B99811CE1919B00B67D5B /* YouTubeInfoRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812B99801CE1919B00B67D5B /* YouTubeInfoRequest.swift */; };
+		81A1179F1E9315B200F51D29 /* YouTubePlayerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A1179E1E9315B200F51D29 /* YouTubePlayerModels.swift */; };
 		81A5225A1CC87FE700C651A3 /* VideoWebPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A522591CC87FE700C651A3 /* VideoWebPage.swift */; };
 		81A7D35D1CD58AEE004361F7 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A7D35C1CD58AEE004361F7 /* Log.swift */; };
 		81A7D35F1CD58E18004361F7 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A7D35E1CD58E18004361F7 /* Request.swift */; };
@@ -52,6 +53,7 @@
 		8113321C1CF2BC73000645F6 /* Thumbnail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Thumbnail.swift; path = Model/Thumbnail.swift; sourceTree = "<group>"; };
 		8113321E1CF2BCD6000645F6 /* LocalizedVideoInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocalizedVideoInfo.swift; path = Model/LocalizedVideoInfo.swift; sourceTree = "<group>"; };
 		812B99801CE1919B00B67D5B /* YouTubeInfoRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YouTubeInfoRequest.swift; sourceTree = "<group>"; };
+		81A1179E1E9315B200F51D29 /* YouTubePlayerModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = YouTubePlayerModels.swift; path = Model/YouTubePlayerModels.swift; sourceTree = "<group>"; };
 		81A522591CC87FE700C651A3 /* VideoWebPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoWebPage.swift; sourceTree = "<group>"; };
 		81A7D35C1CD58AEE004361F7 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		81A7D35E1CD58E18004361F7 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 				811332181CF2BC0C000645F6 /* InfoWrapper.swift */,
 				8113321A1CF2BC37000645F6 /* Snippet.swift */,
 				8113321C1CF2BC73000645F6 /* Thumbnail.swift */,
+				81A1179E1E9315B200F51D29 /* YouTubePlayerModels.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -316,7 +319,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		574DFA96D07CD7B5EC3B4966 /* [CP] Check Pods Manifest.lock */ = {
@@ -331,7 +334,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		B14053584875491FD36FCEC6 /* [CP] Copy Pods Resources */ = {
@@ -383,6 +386,7 @@
 				81A7D35D1CD58AEE004361F7 /* Log.swift in Sources */,
 				81A7D3611CD591DB004361F7 /* Networking.swift in Sources */,
 				810D9DC51CED7A6E00A2EF31 /* YouTubeDataRepository.swift in Sources */,
+				81A1179F1E9315B200F51D29 /* YouTubePlayerModels.swift in Sources */,
 				8113321F1CF2BCD6000645F6 /* LocalizedVideoInfo.swift in Sources */,
 				8113321B1CF2BC37000645F6 /* Snippet.swift in Sources */,
 				81C4BBD51CD23B3B00E13831 /* YouTubeVideoPlayerController.swift in Sources */,

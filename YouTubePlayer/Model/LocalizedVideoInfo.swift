@@ -12,9 +12,7 @@ open class LocalizedVideoInfo: AbstractModel {
     open var title: String!
     open var _description: String!
     
-    open override static var propertyKeys: [String: String] { return ["_description": "description"]}
-    
-    open override func shouldFail(withInvalidValue value: Any?, forProperty property: String) -> Bool {
-        return true
+    open override static var propertyKeys: [String: String] {
+        return ["_description": "description"]
     }
 }

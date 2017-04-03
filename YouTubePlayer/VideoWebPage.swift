@@ -8,27 +8,6 @@
 
 import Foundation
 
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
-}
-
-fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
-}
-
-
 private let playerConfigRegularExpression = try! NSRegularExpression(pattern: "ytplayer.config\\s*=\\s*(\\{.*?\\});|\\(\\s*'PLAYER_CONFIG',\\s*(\\{.*?\\})\\s*\\)", options: [.caseInsensitive])
 private let regionsRegex = try! NSRegularExpression(pattern: "meta\\s+itemprop=\"regionsAllowed\"\\s+content=\"(.*)\"", options: [])
 
@@ -58,7 +37,7 @@ class VideoWebpage {
         isAgeRestricted = htmlString.range(of: "og:restrictions:age") != nil
         
         let match = regionsRegex.firstMatch(in: htmlString, options: [], range: htmlRange)
-        if match?.numberOfRanges > 1 {
+        if match?.numberOfRanges ?? 0 > 1 {
             let regions = html.substring(with: match!.rangeAt(1))
             regionsAllowed = Set<String>(regions.components(separatedBy: ","))
         }

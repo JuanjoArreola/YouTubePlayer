@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal let syncQueue: DispatchQueue = DispatchQueue(label: "com.youtubeplayer.SyncQueue", attributes: DispatchQueue.Attributes.concurrent)
+internal let syncQueue = DispatchQueue(label: "com.youtubeplayer.SyncQueue", attributes: DispatchQueue.Attributes.concurrent)
 
 enum RequestError: Error {
     case canceled
@@ -92,10 +92,8 @@ open class URLSessionDataTaskRequest<T: Any>: Request<T> {
     
     var dataTask: URLSessionDataTask?
     
-//    required public override init() {}
-    
     override open func cancel() {
-        Log.debug("Cancelling: \(dataTask?.originalRequest?.url)")
+        Log.debug("Cancelling: \(dataTask?.originalRequest?.url?.absoluteString ?? "")")
         dataTask?.cancel()
         super.cancel()
     }

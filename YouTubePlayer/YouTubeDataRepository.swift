@@ -12,7 +12,7 @@ open class YouTubeDataRepository: AbstractRepository<String> {
     
     var key: String
     
-    override fileprivate init(objectKey: String?, objectsKey: String?, statusKey: String?, statusOk: String?, errorDescriptionKey: String?, errorCodeKey: String?) {
+    override private init(objectKey: String?, objectsKey: String?, statusKey: String?, statusOk: String?, errorDescriptionKey: String?, errorCodeKey: String?) {
         self.key = ""
         super.init()
     }
