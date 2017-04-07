@@ -37,17 +37,17 @@ class YouTubePlayerTests: XCTestCase {
 //    }
     
     func testGetVideoInfo() {
-        let expectation = expectationWithDescription("info")
-        dataRepository.requestVideoInfo("SfjLRuE1CLw") { (getSnippet) in
+        let exp = expectation(description: "info")
+        _ = dataRepository.requestVideoInfo(videoId: "SfjLRuE1CLw") { (getSnippet) in
             do {
                 let snippet = try getSnippet()
-                Log.debug(snippet.thumbnails.`default`)
-                expectation.fulfill()
+                Log.debug(snippet.thumbnails.`default`?.description ?? "")
+                exp.fulfill()
             } catch {
                 Log.error(error)
             }
         }
-        waitForExpectationsWithTimeout(200, handler: nil)
+        waitForExpectations(timeout: 12, handler: nil)
     }
     
 }

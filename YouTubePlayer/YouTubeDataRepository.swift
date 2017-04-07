@@ -8,18 +8,15 @@
 
 import Apic
 
-open class YouTubeDataRepository: AbstractRepository<String> {
+open class YouTubeDataRepository: AbstractRepository {
     
     var key: String
     
-    override private init(objectKey: String?, objectsKey: String?, statusKey: String?, statusOk: String?, errorDescriptionKey: String?, errorCodeKey: String?) {
-        self.key = ""
-        super.init()
+    public init(key: String) {
+        self.key = key
+        super.init(responseParser: DefaultResponseParser<String>())
     }
     
-    public required init(key: String) {
-        self.key = key
-    }
     
     open func requestVideoInfo(videoId: String, completion: @escaping (_ getSnippet: () throws -> Snippet) -> Void) -> ApicRequest<Snippet> {
         let request = ApicRequest<Snippet>(completionHandler: completion)
@@ -28,9 +25,9 @@ open class YouTubeDataRepository: AbstractRepository<String> {
             do {
                 let infoWrapper = try getObject()
                 guard let snippet = infoWrapper.items.first?.snippet else { throw YouTubeError.invalidResponse }
-                request.complete(withObject: snippet)
+                request.complete(with: snippet)
             } catch {
-                request.complete(withError: error)
+                request.complete(with: error)
             }
         }
         return request

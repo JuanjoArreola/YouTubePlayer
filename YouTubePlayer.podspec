@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "YouTubePlayer"
-  s.version      = "0.9.0"
+  s.version      = "0.9.1"
   s.summary      = "YouTubePlayer is a library to fetch video information from the YouTube Data API and play videos using the AVPlayer"
 
   s.homepage     = "https://github.com/JuanjoArreola/YouTubePlayer"
