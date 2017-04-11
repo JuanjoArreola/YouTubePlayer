@@ -15,6 +15,12 @@ open class YouTubeDataRepository: AbstractRepository {
     public init(key: String) {
         self.key = key
         super.init(responseParser: DefaultResponseParser<String>())
+        
+        DefaultTypeResolver.shared.register(types: LocalizedVideoInfo.self,
+                                            Thumbnail.self,
+                                            Thumbnails.self,
+                                            VideoInfo.self,
+                                            Snippet.self)
     }
     
     
