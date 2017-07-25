@@ -22,30 +22,17 @@ class YouTubePlayerTests: XCTestCase {
         super.tearDown()
     }
     
-//    func testGetYouTubeVideo() {
-//        let expectation = expectationWithDescription("video")
-//        VideoOperation.createWithVideoIdentifier("SfjLRuE1CLw", languageIdentifier: "en") { (getOperation) in
-//            do {
-//                let operation = try getOperation()
-//                Log.debug(operation)
-//                expectation.fulfill()
-//            } catch {
-//                Log.error(error)
-//            }
-//        }
-//        waitForExpectationsWithTimeout(2, handler: nil)
-//    }
-    
     func testGetVideoInfo() {
         let exp = expectation(description: "info")
-        _ = dataRepository.requestVideoInfo(videoId: "SfjLRuE1CLw") { (getSnippet) in
+        _ = dataRepository.requestVideoInfo(videoId: "saGYhMCrMBU") { (getSnippet) in
             do {
                 let snippet = try getSnippet()
                 Log.debug(snippet.thumbnails.`default`?.description ?? "")
-                exp.fulfill()
             } catch {
                 Log.error(error)
+                XCTFail()
             }
+            exp.fulfill()
         }
         waitForExpectations(timeout: 12, handler: nil)
     }

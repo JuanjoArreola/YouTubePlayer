@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AsyncRequest
 
 enum FetchError: Error {
     case invalidData
@@ -24,7 +25,7 @@ func request(url: URL, completion: @escaping ((data: Data?, response: URLRespons
 }
 
 func startRequest(with url: URL, completion: @escaping (_ getResult: () throws -> (data: Data, response: URLResponse?)) -> Void) -> Cancellable {
-    let dataRequest = URLSessionDataTaskRequest<(data: Data, response: URLResponse?)>(completionHandler: completion)
+    let dataRequest = URLSessionRequest<(data: Data, response: URLResponse?)>(completionHandler: completion)
     dataRequest.dataTask = request(url: url) { (data: Data?, response: URLResponse?, error: Error?) in
         do {
             if let error = error {
@@ -34,11 +35,11 @@ func startRequest(with url: URL, completion: @escaping (_ getResult: () throws -
                 throw FetchError.invalidData
             }
             DispatchQueue.main.async {
-                dataRequest.complete(withObject: (data: validData, response: response))
+                dataRequest.complete(with: (data: validData, response: response))
             }
         } catch {
             DispatchQueue.main.async {
-                dataRequest.complete(withError: error)
+                dataRequest.complete(with: error)
             }
         }
     }

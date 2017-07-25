@@ -4,7 +4,7 @@ use_frameworks!
 
 target 'YouTubePlayer' do
 
-  pod 'Apic', :path => '../Apic'
+  pod 'Apic', '~> 3.9.6'
 
   target 'YouTubePlayerTests' do
     inherit! :search_paths

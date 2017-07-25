@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "YouTubePlayer"
-  s.version      = "0.9.2"
+  s.version      = "0.9.3"
   s.summary      = "YouTubePlayer is a library to fetch video information from the YouTube Data API and play videos using the AVPlayer"
 
   s.homepage     = "https://github.com/JuanjoArreola/YouTubePlayer"
@@ -14,6 +14,7 @@ Pod::Spec.new do |s|
 
   s.framework  = "AVKit"
   s.requires_arc = true
-  s.dependency "Apic"
+
+  s.dependency "Apic", "~> 3.9.6"
 
 end

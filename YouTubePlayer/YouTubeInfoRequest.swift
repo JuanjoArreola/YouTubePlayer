@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AsyncRequest
 
 enum YouTubeError: Error {
     case invalidURL
@@ -45,8 +46,8 @@ open class YouTubeInfoRequest: Request<YouTubeVideo> {
         self.languageIdentifier = languageIdentifier ?? Locale.current.languageCode ?? "en"
         
         super.init()
-        completionHandlers!.append(completion)
-        processQueue.async { 
+        add(completionHandler: completion)
+        processQueue.async {
             self.start()
         }
     }
@@ -57,23 +58,23 @@ open class YouTubeInfoRequest: Request<YouTubeVideo> {
         startInfoRequest(withLabel: "embedded") { (getVideo) in
             do {
                 let video = try getVideo()
-                DispatchQueue.main.async(execute: { self.complete(withObject: video) })
+                DispatchQueue.main.async(execute: { self.complete(with: video) })
             }
             catch YouTubeError.encodingError {
-                DispatchQueue.main.async(execute: { self.complete(withError: YouTubeError.encodingError) })
+                DispatchQueue.main.async(execute: { self.complete(with: YouTubeError.encodingError) })
             }
             catch {
                 self.startInfoRequest(withLabel: "detailpage", completion: { (getVideo) in
                     do {
                         let video = try getVideo()
-                        DispatchQueue.main.async(execute: { self.complete(withObject: video) })
+                        DispatchQueue.main.async(execute: { self.complete(with: video) })
                     } catch {
                         self.startWatchPageRequest(completion: { (getVideo) in
                             do {
                                 let video = try getVideo()
-                                DispatchQueue.main.async(execute: { self.complete(withObject: video) })
+                                DispatchQueue.main.async(execute: { self.complete(with: video) })
                             } catch {
-                                DispatchQueue.main.async(execute: { self.complete(withError: error) })
+                                DispatchQueue.main.async(execute: { self.complete(with: error) })
                             }
                         })
                     }
@@ -83,7 +84,7 @@ open class YouTubeInfoRequest: Request<YouTubeVideo> {
     }
     
     func startInfoRequest(withLabel label: String, completion: @escaping (_ getVideo: () throws -> YouTubeVideo) -> Void) {
-        if cancelled { return }
+        if completed { return }
         
         Log.debug("Starting info request with label: \(label)")
         subrequest = infoURLRequest(withLabel: label) { (getResult) in
@@ -103,7 +104,7 @@ open class YouTubeInfoRequest: Request<YouTubeVideo> {
     }
     
     func startWatchPageRequest(completion: @escaping (_ getVideo: () throws -> YouTubeVideo) -> Void) {
-        if cancelled { return }
+        if completed { return }
         if let _ = webpage {
             completion({ throw YouTubeError.webPageError })
         }
@@ -131,7 +132,7 @@ open class YouTubeInfoRequest: Request<YouTubeVideo> {
     }
     
     func startEmbedWebPageRequest(completion: @escaping (_ getVideo: () throws -> YouTubeVideo) -> Void) {
-        if cancelled { return }
+        if completed { return }
         
         let url = URL(string: "https://www.youtube.com/embed/\(videoIdentifier)")!
         subrequest = startRequest(with: url, completion: { (getResult) in
@@ -151,7 +152,7 @@ open class YouTubeInfoRequest: Request<YouTubeVideo> {
     }
     
     func startJavaScriptPlayerRequest(with url: URL, completion: @escaping (_ getVideo: () throws -> YouTubeVideo) -> Void) {
-        if cancelled { return }
+        if completed { return }
         
         subrequest = startRequest(with: url, completion: { (getResult) in
             do {
@@ -172,7 +173,7 @@ open class YouTubeInfoRequest: Request<YouTubeVideo> {
     }
     
     func startAPIRequest(completion: @escaping (_ getVideo: () throws -> YouTubeVideo) -> Void) {
-        if cancelled { return }
+        if completed { return }
         subrequest = APIRequest(completion: { (getResult) in
             do {
                 let result = try getResult()

@@ -1,16 +1,15 @@
 PODS:
-  - Apic (3.8.2)
+  - Apic (3.9.6):
+    - AsyncRequest (~> 1.0.3)
+  - AsyncRequest (1.0.3)
 
 DEPENDENCIES:
-  - Apic (from `../Apic`)
-
-EXTERNAL SOURCES:
-  Apic:
-    :path: ../Apic
+  - Apic (~> 3.9.6)
 
 SPEC CHECKSUMS:
-  Apic: 3e07c7d75f86f4f8d395087b827512a61104ee20
+  Apic: 388bfca13916a0361cae47cf17a2c736d80abff5
+  AsyncRequest: 7742d1ffea1b197b76c547989db9fd111b304cc8
 
-PODFILE CHECKSUM: ddd0038ead62639b30fdc7887da2739ee9790812
+PODFILE CHECKSUM: 01bfb3e6ec2308732d2d850e426eb0100d48c278
 
-COCOAPODS: 1.2.1.beta.1
+COCOAPODS: 1.2.1
